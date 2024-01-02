@@ -1,72 +1,42 @@
 // EntryPage.jsx
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import '../scripts/loginregister.css';
 
+const EntryPage = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [gmail, setGmail] = useState("");
+  const [currentView, setCurrentView] = useState("signUp");
 
-let [username, setUsername] = useState("");
-  let [password, setPassword] = useState("");
-  let [gmail, setGmail] = useState("");
+  const changeView = (view) => {
+    setCurrentView(view);
+  };
 
-
-
-  let handleUsernameChange = (e) => {
+  const handleUsernameChange = (e) => {
     setUsername(e.target.value);
   };
-  let handlePasswordChange = (e) => {
+
+  const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
-  let handleGmailChange = (e) => {
+
+  const handleGmailChange = (e) => {
     setGmail(e.target.value);
-  }
+  };
 
-
-let handleLogin = async() =>{
-    let response =await fetch('http://localhost:5000/register',{
-        method: 'POST',
-        body: JSON.stringify({username:username, password:password, gmail:gmail}),
-        headers: { 'Content-Type': 'application/json'}
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    let response = await fetch('http://localhost:5050/register', {
+      method: 'POST',
+      body: JSON.stringify({ username: username, password: password, gmail: gmail }),
+      headers: { 'Content-Type': 'application/json' }
     })
-    console.log("handlelogin ran");
-}
+    let data = await response.json();
+    console.log(data);
+  };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class EntryPage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentView: "signUp"
-    };
-  }
-
-  changeView = (view) => {
-    this.setState({
-      currentView: view
-    });
-  }
-
-
-
-
-  currentView = () => {
-    switch(this.state.currentView) {
+  const renderView = () => {
+    switch (currentView) {
       case "signUp":
         return (
           <form>
@@ -75,21 +45,21 @@ class EntryPage extends Component {
               <legend>Create Account</legend>
               <ul>
                 <li>
-                  <label for="username">Username:</label>
-                  <input value={username} type="text" id="username" required/>
+                  <label htmlFor="username">Username:</label>
+                  <input onChange={handleUsernameChange} value={username} type="text" id="username" required/>
                 </li>
                 <li>
-                  <label for="gmail">Email:</label>
-                  <input value={gmail} type="email" id="email" required/>
+                  <label htmlFor="gmail">Email:</label>
+                  <input onChange={handleGmailChange} value={gmail} type="email" id="email" required/>
                 </li>
                 <li>
-                  <label for="password">Password:</label>
-                  <input value={password} type="password" id="password" required/>
+                  <label htmlFor="password">Password:</label>
+                  <input onChange={handlePasswordChange} value={password} type="password" id="password" required/>
                 </li>
               </ul>
             </fieldset>
             <button className="sign" onClick={handleLogin}>Sign Up</button>
-            <button type="button" onClick={() => this.changeView("logIn")}>Have an Account?</button>
+            <button type="button" onClick={() => changeView("logIn")}>Have an Account?</button>
           </form>
         );
       case "logIn":
@@ -109,12 +79,12 @@ class EntryPage extends Component {
                 </li>
                 <li>
                   <i></i>
-                  <a onClick={() => this.changeView("PWReset")} href="#">Forgot Password?</a>
+                  <a onClick={() => changeView("PWReset")} href="#">Forgot Password?</a>
                 </li>
               </ul>
             </fieldset>
             <button>Login</button>
-            <button type="button" onClick={() => this.changeView("signUp")}>Create an Account</button>
+            <button type="button" onClick={() => changeView("signUp")}>Create an Account</button>
           </form>
         );
       case "PWReset":
@@ -134,21 +104,19 @@ class EntryPage extends Component {
               </ul>
             </fieldset>
             <button>Send Reset Link</button>
-            <button type="button" onClick={() => this.changeView("logIn")}>Go Back</button>
+            <button type="button" onClick={() => changeView("logIn")}>Go Back</button>
           </form>
         );
       default:
         break;
     }
-  }
+  };
 
-  render() {
-    return (
-      <section id="entry-page">
-        {this.currentView()}
-      </section>
-    );
-  }
-}
+  return (
+    <section id="entry-page">
+      {renderView()}
+    </section>
+  );
+};
 
 export default EntryPage;
